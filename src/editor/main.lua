@@ -1,7 +1,7 @@
 require("LoveFrames")
 require("Tserial")
 require("util")
-class = require("middleclass")
+class = require("middleclass.middleclass")
 local Level = require("Level")
 
 -- Constants
