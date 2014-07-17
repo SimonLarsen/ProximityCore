@@ -9,7 +9,7 @@ local WIDTH = 900
 local HEIGHT = 670
 
 local LAYOUT_NAMES = { "Visuals", "Movement", "Bullets" }
-local BULLET_TYPES = {"Balls", "Ray", "Bomb", "Radial"}
+local BULLET_TYPES = { "Balls", "Ray", "Bomb", "Radial" }
 
 -- Data
 local layouts = {
@@ -152,12 +152,26 @@ end
 function love.update(dt)
 	loveframes.update(dt)
 
-	if playing then
-		time = song:tell()
-		if time > scroll + bartime*0.75 then
-			scroll = time - bartime*0.75
+	if love.mouse.isDown("l") then
+		local mx, my = love.mouse.getPosition()
+		if my >= 500 and my <= 515 and mx >= 50 then
+			time = (mx - 50) / seclen + scroll
+			song:seek(time)
 		end
 	end
+	time = math.max(0, time)
+	if playing then
+		time = song:tell()
+	end
+
+	if time > scroll + bartime*0.90 then
+		scroll = time - bartime*0.90
+	end
+	if time < scroll + bartime*0.1 then
+		scroll = time - bartime*0.1
+	end
+	scroll = math.max(0, scroll)
+
 	statustext:SetText(timestr(time))
 end
 
@@ -199,10 +213,10 @@ function drawTimeline()
 	love.graphics.setScissor()
 
 	-- Draw track boxes
-	love.graphics.setColor(22,22,22)
-	love.graphics.rectangle("fill", 0, 515, 50, 27)
-	love.graphics.rectangle("fill", 0, 569, 50, 27)
-	love.graphics.rectangle("fill", 0, 623, 50, 27)
+	love.graphics.setColor(0,0,0,80)
+	love.graphics.rectangle("fill", 0, 515, WIDTH, 27)
+	love.graphics.rectangle("fill", 0, 569, WIDTH, 27)
+	love.graphics.rectangle("fill", 0, 623, WIDTH, 27)
 
 
 	-- Draw time marker
@@ -223,6 +237,12 @@ end
 
 function love.mousepressed(x, y, button)
 	loveframes.mousepressed(x, y, button)
+
+	if button == "wd" then
+		time = time + 1 / (level:getBPM() / 60) / 2
+	elseif button == "wu" then
+		time = time - 1 / (level:getBPM() / 60)
+	end
 end
 
 function love.mousereleased(x, y, button)
@@ -238,6 +258,7 @@ function love.keypressed(k)
 		else
 			start = time
 			playing = true
+			song:seek(time)
 			song:play()
 		end
 
