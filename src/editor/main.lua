@@ -18,8 +18,6 @@ local layouts = {
 	Bullets = { panel = nil, type = nil }
 }
 
-local statustext
-
 local bullet_forms = {
 	Balls = { panel = nil, count = nil, offset = nil },
 	Ray = { panel = nil, dir = nil },
@@ -34,10 +32,17 @@ local BULLET_FIELDS = {
 	Radial	= { "startdir", "enddir" }
 }
 
+local statustext
+
 -- Objects
-local placeholder
+local placeholder, point
+local state
 local level, song
 local time, scroll, start, playing
+local seclen, bartime, beattime
+
+-- Visuals
+local bars = {0,0,0}
 
 local vera11
 
@@ -49,26 +54,36 @@ function love.load()
 
 	createFrames()
 
-	placeholder = love.graphics.newImage("placeholder.png")
+	placeholder = love.graphics.newImage("assets/placeholder.png")
+	point = love.graphics.newImage("assets/point.png")
 
-	loadLevel("paris")
-
+	filename = "paris"
 	time = 0
 	scroll = 0
+	start = 0
 	playing = false
+
+	loadLevel(filename)
 end
 
 function loadLevel(filename)
 	local strdata = love.filesystem.read("levels/" .. filename) 
-	local data = Tserial.unpack(strdata)
+	level = Level()
+	level:deserialize(strdata)
 
-	level = Level(data.name, data.song, data.bpm)
 	song = love.audio.newSource("songs/" .. level:getSong(), "stream")
 
 	love.window.setTitle("Proximity Core editor - " .. level:getName())
 
 	seclen = level:getBPM() * 40 / 60
 	bartime = (WIDTH-50) / seclen
+	beattime = 1 / (level:getBPM() / 60)
+	state = LAYOUT_NAMES[1]
+end
+
+function saveLevel(filename)
+	local strdata = level:serialize()
+	love.filesystem.write("levels/" .. filename, strdata)
 end
 
 function createFrames()
@@ -78,12 +93,11 @@ function createFrames()
 	topmenu:SetSize(WIDTH, 20)
 
 	-- Create menu
-	local newButton = loveframes.Create("button")
-	newButton:SetText("New")
-	local openButton = loveframes.Create("button")
-	openButton:SetText("Open")
 	local saveButton = loveframes.Create("button")
 	saveButton:SetText("Save")
+	saveButton.OnClick = function(object)
+		saveLevel(filename)
+	end
 
 	local layoutChoice = loveframes.Create("multichoice")
 	for i,v in ipairs(LAYOUT_NAMES) do
@@ -91,6 +105,7 @@ function createFrames()
 	end
 	layoutChoice:SetChoice(LAYOUT_NAMES[1])
 	layoutChoice.OnChoiceSelected = function(object, choice)
+		state = choice
 		for i,v in pairs(layouts) do
 			if v.panel then
 				v.panel:SetVisible(i == choice)
@@ -98,8 +113,6 @@ function createFrames()
 		end
 	end
 
-	topmenu:AddItem(newButton)
-	topmenu:AddItem(openButton)
 	topmenu:AddItem(saveButton)
 	topmenu:AddItem(layoutChoice)
 
@@ -152,6 +165,7 @@ end
 function love.update(dt)
 	loveframes.update(dt)
 
+	-- Timeline
 	if love.mouse.isDown("l") then
 		local mx, my = love.mouse.getPosition()
 		if my >= 500 and my <= 515 and mx >= 50 then
@@ -173,11 +187,23 @@ function love.update(dt)
 	scroll = math.max(0, scroll)
 
 	statustext:SetText(timestr(time))
+
+	-- Visuals
+	for i=1,3 do
+		bars[i] = math.max(0, bars[i] - 3 * dt)
+	end
+	for i,v in ipairs(level:getVisuals()) do
+		if time >= v.time and time <= v.time+(beattime/8) then
+			bars[v.type] = math.min(1, bars[v.type] + 32*dt)
+		end
+	end
 end
 
 function love.draw()
-	love.graphics.draw(placeholder, 0, 20)
 	drawTimeline()
+	if state == "Visuals" then
+		drawVisualsView()
+	end
 
 	loveframes.draw()
 end
@@ -217,31 +243,69 @@ function drawTimeline()
 	love.graphics.rectangle("fill", 0, 515, WIDTH, 27)
 	love.graphics.rectangle("fill", 0, 569, WIDTH, 27)
 	love.graphics.rectangle("fill", 0, 623, WIDTH, 27)
+	love.graphics.setColor(255,255,255)
 
+	-- Draw current state
+	if state == "Visuals" then
+		drawTimelineVisuals()
+	end
 
 	-- Draw time marker
 	love.graphics.setColor(225,37,37)
 	love.graphics.line(timepos+0.5, 500, timepos+0.5, 650)
-
 	love.graphics.setColor(255,255,255)
-
-	drawTimelineVisuals()
 end
 
 function drawTimelineVisuals()
+	local scrollpos = scroll * seclen
 	love.graphics.setFont(vera11)
 	love.graphics.print("BDrum", 5, 523)
 	love.graphics.print("Snare", 5, 550)
 	love.graphics.print("Noise", 5, 577)
+
+	love.graphics.setScissor(50, 515, WIDTH-50, 135)
+	for i,v in ipairs(level:getVisuals()) do
+		love.graphics.draw(point, 50+v.time*seclen-scrollpos, 515+(v.type-1)*27)
+	end
+	love.graphics.setScissor()
+end
+
+function drawVisualsView()
+	love.graphics.setColor(116,205,124)
+	love.graphics.rectangle("fill", 0, 20, 640, 480)
+
+	love.graphics.setColor(225,225,225)
+	local angleinc = math.pi*2 / 3
+	for i=1,3 do
+		love.graphics.arc("fill", 320, 280, bars[i]*200, (i-1)*angleinc, i*angleinc)
+	end
+
+	love.graphics.setColor(255,255,255)
 end
 
 function love.mousepressed(x, y, button)
 	loveframes.mousepressed(x, y, button)
 
-	if button == "wd" then
-		time = time + 1 / (level:getBPM() / 60) / 2
+	if button == "l" then
+		if y >= 515 and y <= 596 and x > 50 then
+			local time = (x - 50) / seclen + scroll
+			time = math.floor(time / (beattime/4)) * (beattime/4)
+			local type = math.floor((y-515)/27)+1
+			level:addVisual(time, type)
+		end
+	
+	elseif button == "r" then
+		if y >= 515 and y <= 596 and x > 50 then
+			local time = (x - 50) / seclen + scroll
+			local type = math.floor((y-515)/27)+1
+			level:deleteVisual(time, type)
+		end
+
+	elseif button == "wd" then
+		time = time + beattime / 2
+
 	elseif button == "wu" then
-		time = time - 1 / (level:getBPM() / 60)
+		time = time - beattime
 	end
 end
 
@@ -258,8 +322,8 @@ function love.keypressed(k)
 		else
 			start = time
 			playing = true
-			song:seek(time)
 			song:play()
+			song:seek(time)
 		end
 
 	elseif k == "kp0" then
