@@ -163,17 +163,33 @@ function createFrames()
 	statustext = loveframes.Create("text", status):SetPos(4,4)
 end
 
+function getTimelineTime(x)
+	return (x - 50) / seclen + scroll
+end
+
+function getTimelineTick(x)
+	return math.floor(getTimelineTime(x) / ticktime)
+end
+
 function love.update(dt)
 	loveframes.update(dt)
 
 	-- Timeline
+	local mx, my = love.mouse.getPosition()
 	if love.mouse.isDown("l") then
-		local mx, my = love.mouse.getPosition()
 		if my >= 500 and my <= 515 and mx >= 50 then
 			time = (mx - 50) / seclen + scroll
 			song:seek(time)
 		end
 	end
+	if love.mouse.isDown("r") then
+		if my >= 515 and my < 595 and mx > 50 then
+			local tick = getTimelineTick(mx)
+			local type = math.floor((my-515)/27)+1
+			level:deleteVisual(tick, type)
+		end
+	end
+
 	time = math.max(0, time)
 	if playing then
 		time = song:tell()
@@ -199,6 +215,62 @@ function love.update(dt)
 			bars[v.type] = math.min(1, bars[v.type] + 32*dt)
 		end
 	end
+end
+
+function love.mousepressed(x, y, button)
+	loveframes.mousepressed(x, y, button)
+
+	if button == "l" then
+		if y >= 515 and y <= 596 and x > 50 then
+			local tick = getTimelineTick(x)
+			local type = math.floor((y-515)/27)+1
+			level:addVisual(tick, type)
+		end
+	
+	elseif button == "r" then
+
+	elseif button == "wd" then
+		time = time + beattime / 2
+
+	elseif button == "wu" then
+		time = time - beattime
+	end
+end
+
+function love.mousereleased(x, y, button)
+	loveframes.mousereleased(x, y, button)
+end
+
+function love.keypressed(k)
+	loveframes.keypressed(k)
+	if k == " " then
+		if playing then
+			playing = false
+			song:pause()
+		else
+			start = time
+			playing = true
+			song:play()
+			song:seek(time)
+		end
+
+	elseif k == "kp0" then
+		if time == start then
+			time = 0
+		else
+			time = start
+		end
+		scroll = time
+		song:seek(time)
+	end
+end
+
+function love.keyreleased(k)
+	loveframes.keyreleased(k)
+end
+
+function love.textinput(text)
+	loveframes.textinput(text)
 end
 
 function love.draw()
@@ -268,7 +340,6 @@ function drawTimelineVisuals()
 	love.graphics.setScissor(50, 515, WIDTH-50, 135)
 	for i,v in ipairs(level:getVisuals()) do
 		love.graphics.draw(point, 50+v.tick*ticktime*seclen-scrollpos, 515+(v.type-1)*27)
-		--love.graphics.draw(point, 50+v.time*seclen-scrollpos, 515+(v.type-1)*27)
 	end
 	love.graphics.setScissor()
 end
@@ -284,67 +355,4 @@ function drawVisualsView()
 	end
 
 	love.graphics.setColor(255,255,255)
-end
-
-function love.mousepressed(x, y, button)
-	loveframes.mousepressed(x, y, button)
-
-	if button == "l" then
-		if y >= 515 and y <= 596 and x > 50 then
-			local time = (x - 50) / seclen + scroll
-			local tick = math.floor(time / ticktime)
-			local type = math.floor((y-515)/27)+1
-			level:addVisual(tick, type)
-		end
-	
-	elseif button == "r" then
-		if y >= 515 and y <= 596 and x > 50 then
-			local time = (x - 50) / seclen + scroll
-			local tick = math.floor(time / ticktime)
-			local type = math.floor((y-515)/27)+1
-			level:deleteVisual(tick, type)
-		end
-
-	elseif button == "wd" then
-		time = time + beattime / 2
-
-	elseif button == "wu" then
-		time = time - beattime
-	end
-end
-
-function love.mousereleased(x, y, button)
-	loveframes.mousereleased(x, y, button)
-end
-
-function love.keypressed(k)
-	loveframes.keypressed(k)
-	if k == " " then
-		if playing then
-			playing = false
-			song:pause()
-		else
-			start = time
-			playing = true
-			song:play()
-			song:seek(time)
-		end
-
-	elseif k == "kp0" then
-		if time == start then
-			time = 0
-		else
-			time = start
-		end
-		scroll = time
-		song:seek(time)
-	end
-end
-
-function love.keyreleased(k)
-	loveframes.keyreleased(k)
-end
-
-function love.textinput(text)
-	loveframes.textinput(text)
 end
