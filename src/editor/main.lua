@@ -57,7 +57,7 @@ function love.load()
 	placeholder = love.graphics.newImage("assets/placeholder.png")
 	point = love.graphics.newImage("assets/point.png")
 
-	filename = "paris"
+	filename = "fearless"
 	time = 0
 	scroll = 0
 	start = 0
@@ -254,7 +254,7 @@ function love.keypressed(k)
 			song:seek(time)
 		end
 
-	elseif k == "kp0" then
+	elseif k == "kp0" or k == "home" then
 		if time == start then
 			time = 0
 		else
@@ -333,9 +333,9 @@ end
 function drawTimelineVisuals()
 	local scrollpos = scroll * seclen
 	love.graphics.setFont(vera11)
-	love.graphics.print("BDrum", 5, 523)
-	love.graphics.print("Snare", 5, 550)
-	love.graphics.print("Noise", 5, 577)
+	love.graphics.print("Ch. 1", 5, 523)
+	love.graphics.print("Ch. 2", 5, 550)
+	love.graphics.print("Ch. 3", 5, 577)
 
 	love.graphics.setScissor(50, 515, WIDTH-50, 135)
 	for i,v in ipairs(level:getVisuals()) do
@@ -351,7 +351,7 @@ function drawVisualsView()
 	love.graphics.setColor(225,225,225)
 	local angleinc = math.pi*2 / 3
 	for i=1,3 do
-		love.graphics.arc("fill", 320, 280, bars[i]*200, (i-1)*angleinc, i*angleinc)
+		love.graphics.arc("fill", 320, 280, bars[i]*200, (-i+1-0.25)*angleinc, (-i-0.25)*angleinc)
 	end
 
 	love.graphics.setColor(255,255,255)
