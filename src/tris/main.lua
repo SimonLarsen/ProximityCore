@@ -21,6 +21,7 @@ function rebuild()
 	createShape({type="triangle", color=COLORS[1],  x=WIDTH/2, y=HEIGHT/2, rot=0, size=WIDTH/2}, 1, 10)
 	createShape({type="rectangle", color=COLORS[1], x=WIDTH/2, y=0, rot=0, width=WIDTH/2, height=HEIGHT/2}, 1, 10)
 	createShape({type="rectangle", color=COLORS[1], x=0, y=HEIGHT/2, rot=0, width=WIDTH/2, height=HEIGHT/2}, 1, 10)
+	--createShape({type="rectangle", color=COLORS[1], x=0, y=0, rot=0, width=WIDTH, height=HEIGHT}, 1, 20)
 end
 
 function getColor(parent)
@@ -29,13 +30,19 @@ function getColor(parent)
 	else
 		return COLORS[love.math.random(1,#COLORS)]
 	end
+	--[[
+	local r = love.math.random(0, 255)
+	local g = love.math.random(0, 255)
+	local b = love.math.random(0, 255)
+	return {r,g,b}
+	]]
 end
 
 function createTriangle(parent, xoffset, yoffset, rotoffset, size)
 	local rcos = math.cos(parent.rot)
 	local rsin = math.sin(parent.rot)
 	return {
-		x = parent.x + rcos*xoffset + rsin*yoffset,
+		x = parent.x + rcos*xoffset - rsin*yoffset,
 		y = parent.y + rsin*xoffset + rcos*yoffset,
 		color = getColor(parent),
 		size = size,
@@ -48,7 +55,7 @@ function createRectangle(parent, xoffset, yoffset, rotoffset, width, height)
 	local rcos = math.cos(parent.rot)
 	local rsin = math.sin(parent.rot)
 	return {
-		x = parent.x + rcos*xoffset + rsin*yoffset,
+		x = parent.x + rcos*xoffset - rsin*yoffset,
 		y = parent.y + rsin*xoffset + rcos*yoffset,
 		color = getColor(parent),
 		width = width, height = height,
@@ -63,9 +70,10 @@ function createShape(parent, depth, maxdepth)
 			return
 		end
 
+		local action = love.math.random(1,2)
 		if depth > maxdepth or parent.size <= 2*MIN_TRIANGLE_SIZE then -- Stop
 			table.insert(shapes, parent)
-		else -- Slice
+		elseif action == 1 then -- Slice in 2 tris and one rect
 			local x = love.math.random(MIN_TRIANGLE_SIZE, parent.size-MIN_TRIANGLE_SIZE)
 			local y = parent.size - x
 			local t1 = createTriangle(parent, 0, y, 0, x)
@@ -74,6 +82,16 @@ function createShape(parent, depth, maxdepth)
 			createShape(t1, depth+1, maxdepth)
 			createShape(t2, depth+1, maxdepth)
 			createShape(rect, depth+1, maxdepth)
+		elseif action == 2 then -- Slice in two equal sized tris
+			local tsize = math.sqrt(2 * ((parent.size/2)^2))
+			--[[
+			local t1 = createTriangle(parent, parent.size/2, parent.size/2, 3*math.pi/2, tsize)
+			local t2 = createTriangle(parent, parent.size/2, parent.size/2, 5*math.pi/2, tsize)
+			]]
+			local t1 = createTriangle(parent, parent.size/2, parent.size/2, 0.75*math.pi, tsize)
+			local t2 = createTriangle(parent, parent.size/2, parent.size/2, 1.25*math.pi, tsize)
+			createShape(t1, depth+1, maxdepth)
+			createShape(t2, depth+1, maxdepth)
 		end
 	elseif parent.type == "rectangle" then
 		if love.math.random() < DEATH_PROB and parent.width < MAX_SIZE and parent.height < MAX_SIZE then
@@ -101,16 +119,14 @@ function createShape(parent, depth, maxdepth)
 			createShape(right, depth+1, maxdepth)
 
 		elseif action == 3 then -- Slice triangles
+			-- Todo make slice the other way
 			local tsize = math.min(parent.width, parent.height)
 			local t1 = createTriangle(parent, 0, 0, 0, tsize)
 			local t2 = createTriangle(parent, parent.width, parent.height, math.pi, tsize)
-			-- TODO: Make parallelogram
 			createShape(t1, depth+1, maxdepth)
 			createShape(t2, depth+1, maxdepth)
+			-- TODO: Make parallelogram
 		end
-	
-	elseif parent.type == "parallelogram" then
-
 	end
 end
 
