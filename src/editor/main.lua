@@ -39,7 +39,7 @@ local placeholder, point
 local state
 local level, song
 local time, scroll, start, playing
-local seclen, bartime, beattime
+local seclen, bartime, beattime, ticktime
 
 -- Visuals
 local bars = {0,0,0}
@@ -78,6 +78,7 @@ function loadLevel(filename)
 	seclen = level:getBPM() * 40 / 60
 	bartime = (WIDTH-50) / seclen
 	beattime = 1 / (level:getBPM() / 60)
+	ticktime = beattime / 4
 	state = LAYOUT_NAMES[1]
 end
 
@@ -189,11 +190,12 @@ function love.update(dt)
 	statustext:SetText(timestr(time))
 
 	-- Visuals
+	local currenttick = math.floor(time / ticktime)
 	for i=1,3 do
 		bars[i] = math.max(0, bars[i] - 3 * dt)
 	end
 	for i,v in ipairs(level:getVisuals()) do
-		if time >= v.time and time <= v.time+(beattime/8) then
+		if v.tick == currenttick then
 			bars[v.type] = math.min(1, bars[v.type] + 32*dt)
 		end
 	end
@@ -265,7 +267,8 @@ function drawTimelineVisuals()
 
 	love.graphics.setScissor(50, 515, WIDTH-50, 135)
 	for i,v in ipairs(level:getVisuals()) do
-		love.graphics.draw(point, 50+v.time*seclen-scrollpos, 515+(v.type-1)*27)
+		love.graphics.draw(point, 50+v.tick*ticktime*seclen-scrollpos, 515+(v.type-1)*27)
+		--love.graphics.draw(point, 50+v.time*seclen-scrollpos, 515+(v.type-1)*27)
 	end
 	love.graphics.setScissor()
 end
@@ -289,16 +292,17 @@ function love.mousepressed(x, y, button)
 	if button == "l" then
 		if y >= 515 and y <= 596 and x > 50 then
 			local time = (x - 50) / seclen + scroll
-			time = math.floor(time / (beattime/4)) * (beattime/4)
+			local tick = math.floor(time / ticktime)
 			local type = math.floor((y-515)/27)+1
-			level:addVisual(time, type)
+			level:addVisual(tick, type)
 		end
 	
 	elseif button == "r" then
 		if y >= 515 and y <= 596 and x > 50 then
 			local time = (x - 50) / seclen + scroll
+			local tick = math.floor(time / ticktime)
 			local type = math.floor((y-515)/27)+1
-			level:deleteVisual(time, type)
+			level:deleteVisual(tick, type)
 		end
 
 	elseif button == "wd" then

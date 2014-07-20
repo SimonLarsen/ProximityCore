@@ -5,7 +5,9 @@ function Level:initialize(name, song, bpm)
 	self._song = song
 	self._bpm = bpm
 	self._data = {
-		visuals = {}
+		visuals = {
+			-- {tick=[number], type=[1,2,3]}
+		}
 	}
 end
 
@@ -25,22 +27,18 @@ function Level:getBPM()
 	return self._bpm
 end
 
-function Level:addVisual(time, type)
-	local beatlen = 1 / (self._bpm / 60) / 4
+function Level:addVisual(tick, type)
 	for i,v in ipairs(self._data.visuals) do
-		if time >= v.time and time <= v.time+beatlen and v.type == type then
+		if tick == v.tick and type == v.type then
 			return
 		end
 	end
-	local beattime = 1 / (self._bpm / 60)
-	time = math.floor(time / (beattime/4)) * (beattime/4)
-	table.insert(self._data.visuals, {time=time, type=type})
+	table.insert(self._data.visuals, {tick=tick, type=type})
 end
 
-function Level:deleteVisual(time, type)
-	local beatlen = 1 / (self._bpm / 60) / 4
+function Level:deleteVisual(tick, type)
 	for i,v in ipairs(self._data.visuals) do
-		if time >= v.time and time <= v.time+beatlen and v.type == type then
+		if tick == v.tick and type == v.type then
 			table.remove(self._data.visuals, i)
 			return
 		end
