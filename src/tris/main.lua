@@ -37,7 +37,7 @@ function love.update(dt)
 
 end
 
-function drawShapes(shapes)
+local function drawShapes(shapes)
 	for i,v in ipairs(shapes) do
 		love.graphics.push()
 		love.graphics.translate(v.x, v.y)
