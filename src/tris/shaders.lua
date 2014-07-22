@@ -27,6 +27,30 @@ shaders.matrix.sharpen3x3 = {
 	 0, -1,  0
 }
 
+shaders.matrix.edge3x3 = {
+	-1, -1, -1,
+	-1,  8, -1,
+	-1, -1, -1
+}
+
+shaders.matrix.convolve3x3 = {
+	0.0, 0.5, 0.0,
+	0.5, 1.0, 0.5,
+	0.0, 0.5, 0.0
+}
+
+shaders.matrix.normalize3x3 = {
+	  0, 1/6,   0,
+	1/6, 1/3, 1/6,
+	  0, 1/6,   0
+}
+
+shaders.matrix.gaussianblur3x3 = {
+	1/16, 1/8, 1/16,
+	 1/8, 1/4,  1/8,
+	1/16, 1/8, 1/16
+}
+
 shaders.generateOffsets3x3 = function(w, h)
 	local xoff = 1 / w
 	local yoff = 1 / h
