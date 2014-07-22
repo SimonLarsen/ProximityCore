@@ -353,7 +353,7 @@ function drawTimelineVisuals()
 end
 
 function drawVisualsView()
-	love.graphics.setColor(116,205,124)
+	love.graphics.setColor(10,10,10)
 	love.graphics.rectangle("fill", 0, 20, 640, 480)
 
 	love.graphics.setColor(225,225,225)
