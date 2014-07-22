@@ -42,20 +42,6 @@ local function createRectangle(parent, xoffset, yoffset, rotoffset, width, heigh
 	}
 end
 
-local function createParallelogram(parent, xoffset, yoffset, rotoffset, width, height, length)
-	local rcos = math.cos(parent.rot)
-	local rsin = math.sin(parent.rot)
-	return {
-		x = parent.x + rcos*xoffset - rsin*yoffset,
-		y = parent.y + rsin*xoffset + rcos*yoffset,
-		rot = parent.rot+rotoffset,
-		width = width, height = height,
-		color = getColor(parent),
-		scale = 1,
-		type = "parallelogram"
-	}
-end
-
 local function createShape(parent, depth, maxdepth)
 	if parent.type == "triangle" then
 		if love.math.random() < DEATH_PROB and parent.size < MAX_SIZE then
