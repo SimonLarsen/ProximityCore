@@ -37,21 +37,15 @@ function love.update(dt)
 
 end
 
-function love.draw()
-	canvas:clear()
-	love.graphics.setCanvas(canvas)
-	local mx, my = love.mouse.getPosition()
-
+function drawShapes(shapes)
 	for i,v in ipairs(shapes) do
 		love.graphics.push()
 		love.graphics.translate(v.x, v.y)
-		if v.type ~= "parallelogram" then
-			love.graphics.rotate(v.rot)
-		end
+		love.graphics.rotate(v.rot)
 
 		local time = love.timer.getTime()
 		local sqdist = (v.x-WIDTH/2)^2 + (v.y-HEIGHT/2)^2
-		local scale = math.cos(sqdist/50000 + love.timer.getTime()*2)^2
+		local scale = math.cos(sqdist/50000 + love.timer.getTime()*2)^4
 		love.graphics.scale(scale, scale)
 
 		love.graphics.translate(-v.x, -v.y)
@@ -64,13 +58,21 @@ function love.draw()
 		end
 		love.graphics.pop()
 	end
+end
+
+function love.draw()
+	canvas:clear()
+	love.graphics.setCanvas(canvas)
+
+	drawShapes(shapes)
+
 	love.graphics.setColor(255,255,255)
 
 	love.graphics.setCanvas()
 	love.graphics.setShader(shader)
 	love.graphics.draw(canvas)
 	love.graphics.setShader()
-	love.graphics.draw(overlay, 0, 0)
+	--love.graphics.draw(overlay, 0, 0)
 end
 
 function love.keypressed(k)

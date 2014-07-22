@@ -7,7 +7,7 @@ local NCOLORS = 2
 local shapes
 
 local function getColor(parent)
-	if parent and love.math.random() < 0.6 then
+	if parent and love.math.random() < 0.5 then
 		return parent.color
 	else
 		return love.math.random(1,NCOLORS)
@@ -108,6 +108,7 @@ local function createShape(parent, depth, maxdepth)
 
 		elseif action == 2 then -- Slice triangles + parallelogram
 			if parent.height > parent.width then
+				parent = createRectangle(parent, 0, parent.height, 1.5*math.pi, parent.height, parent.width)
 			end
 			local t1 = createTriangle(parent, 0, parent.height, 1.5*math.pi, parent.height)
 			local t2 = createTriangle(parent, parent.width, 0, 0.5*math.pi, parent.height)
