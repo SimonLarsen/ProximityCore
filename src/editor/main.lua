@@ -174,6 +174,8 @@ end
 function love.update(dt)
 	loveframes.update(dt)
 
+	local oldtime = time
+
 	-- Timeline
 	local mx, my = love.mouse.getPosition()
 	if love.mouse.isDown("l") then
@@ -195,24 +197,24 @@ function love.update(dt)
 		time = song:tell()
 	end
 
-	if time > scroll + bartime*0.90 then
-		scroll = time - bartime*0.90
+	if time > scroll + bartime*0.80 then
+		scroll = time - bartime*0.80
 	end
-	if time < scroll + bartime*0.1 then
-		scroll = time - bartime*0.1
+	if time < scroll + bartime*0.2 then
+		scroll = time - bartime*0.2
 	end
 	scroll = math.max(0, scroll)
 
 	statustext:SetText(timestr(time))
 
 	-- Visuals
-	local currenttick = math.floor(time / ticktime)
 	for i=1,3 do
 		bars[i] = math.max(0, bars[i] - 3 * dt)
 	end
 	for i,v in ipairs(level:getVisuals()) do
-		if v.tick == currenttick then
-			bars[v.type] = math.min(1, bars[v.type] + 32*dt)
+		local vtime = v.tick * ticktime
+		if vtime >= oldtime and vtime < time then
+			bars[v.type] = 1
 		end
 	end
 end
