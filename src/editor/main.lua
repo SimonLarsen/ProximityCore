@@ -15,13 +15,13 @@ local BULLET_TYPES = { "Balls", "Ray", "Bomb", "Radial" }
 local layouts = {
 	Visuals = { panel = nil },
 	Movement = { panel = nil },
-	Bullets = { panel = nil, type = nil }
+	Bullets = { panel = nil, type = nil, parent = nil }
 }
 
 local bullet_forms = {
-	Balls = { panel = nil, count = nil, offset = nil },
-	Ray = { panel = nil, dir = nil },
-	Bomb = { panel = nil, radius = nil },
+	Balls  = { panel = nil, count = nil, offset = nil },
+	Ray    = { panel = nil, dir = nil },
+	Bomb   = { panel = nil, radius = nil },
 	Radial = { panel = nil, startdir = nil, enddir = nil }
 }
 
@@ -128,6 +128,7 @@ function createFrames()
 	bl:SetSize(250, 230)
 
 	local bt = loveframes.Create("multichoice", bp)
+	bt:SetText("Bullet type")
 	bt:SetPos(5, 240)
 	layouts.Bullets.type = bt
 	bt.OnChoiceSelected = function(object, choice)
@@ -138,12 +139,17 @@ function createFrames()
 		end
 	end
 
+	local bpa = loveframes.Create("multichoice", bp)
+	bpa:SetText("Parent")
+	bpa:SetPos(5, 270)
+	layouts.Bullets.parent = bpa
+
 	for i,v in ipairs(BULLET_TYPES) do
 		bt:AddChoice(v)
 
 		local form = loveframes.Create("grid", bp)
 		bullet_forms[v].panel = form
-		form:SetPos(5, 270)
+		form:SetPos(5, 300)
 		form:SetColumns(2)
 		form:SetRows(#BULLET_FIELDS[v])
 		form:SetCellWidth(115)
