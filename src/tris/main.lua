@@ -15,7 +15,7 @@ local overlay
 
 function love.load()
 	love.window.setMode(WIDTH, HEIGHT)
-	love.graphics.setBackgroundColor(94, 124, 157)
+	love.graphics.setBackgroundColor(10,10,10)
 	love.graphics.setDefaultFilter("nearest","nearest")
 
 	canvas = love.graphics.newCanvas(WIDTH, HEIGHT)
