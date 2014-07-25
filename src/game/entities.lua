@@ -9,17 +9,19 @@ function Entities:clear()
 end
 
 function Entities:update(dt)
-	for i,v in ipairs(self.entities) do
-		if v.behavior then
-			v.behavior:update(dt)
+	for i, e in ipairs(self.entities) do
+		for j, c in pairs(e:getComponents()) do
+			if c.update then
+				c:update(dt)
+			end
 		end
 	end
 end
 
 function Entities:draw()
-	for i,v in ipairs(self.entities) do
-		if v.renderer then
-			v.renderer:draw()
+	for i, e in ipairs(self.entities) do
+		if e.renderer then
+			-- render
 		end
 	end
 end
