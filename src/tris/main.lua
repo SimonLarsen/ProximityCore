@@ -3,14 +3,15 @@ local shaders = require("shaders")
 
 local WIDTH = 640
 local HEIGHT = 480
+
 local COLORS = {
---	{235, 239, 244},
-	{146,167,188},
-	{47,73,103}
+	{255,255,255},
+	{128,128,128}
 }
 
 local shapes = {}
-local canvas, shader
+local canvas
+local trishader
 local overlay
 
 function love.load()
@@ -18,13 +19,16 @@ function love.load()
 	love.graphics.setBackgroundColor(10,10,10)
 	love.graphics.setDefaultFilter("nearest","nearest")
 
-	canvas = love.graphics.newCanvas(WIDTH, HEIGHT)
-	shader = love.graphics.newShader(shaders.shader.convolution3x3.pixelcode)
-	local xoff = 1 / WIDTH
-	local yoff = 1 / HEIGHT
-	shader:send("offset", unpack(shaders.generateOffsets3x3(WIDTH, HEIGHT)))
-	shader:send("kernel", unpack(shaders.matrix.sharpen3x3))
 	overlay = love.graphics.newImage("overlay.png")
+	bg = love.graphics.newImage("winter.png")
+
+	canvas = love.graphics.newCanvas(WIDTH, HEIGHT)
+
+	trishader = love.graphics.newShader(shaders.shader.test.pixelcode)
+	trishader:send("screen", {WIDTH,HEIGHT})
+	trishader:send("bg", bg)
+	trishader:send("offset", unpack(shaders.generateOffsets3x3(WIDTH, HEIGHT)))
+	trishader:send("kernel", unpack(shaders.matrix.sharpen3x3))
 
 	rebuild()
 end
@@ -69,10 +73,10 @@ function love.draw()
 	love.graphics.setColor(255,255,255)
 
 	love.graphics.setCanvas()
-	love.graphics.setShader(shader)
+	love.graphics.setShader(trishader)
 	love.graphics.draw(canvas)
 	love.graphics.setShader()
-	--love.graphics.draw(overlay, 0, 0)
+	love.graphics.draw(overlay, 0, 0)
 end
 
 function love.keypressed(k)

@@ -10,15 +10,31 @@ shaders.shader.convolution3x3 = {
 
 		vec4 effect(vec4 col, Image tex, vec2 tc, vec2 sc) {
 			vec4 sum = vec4(0);
-			int i;
-			for(i = 0; i < 9; i++) {
+			for(int i = 0; i < 9; i++) {
 				vec4 c = col * Texel(tex, tc+offset[i]);
 				sum += c * kernel[i];
 			}
 			return sum;
 		}
 	]]
+}
 
+shaders.shader.test = {
+	pixelcode = [[
+		uniform vec2 screen;
+		uniform Image bg;
+		uniform vec2 offset[9];
+		uniform number kernel[9];
+
+		vec4 effect(vec4 col, Image tex, vec2 tc, vec2 sc) {
+			vec4 sum = vec4(0);
+			for(int i = 0; i < 9; ++i) {
+				vec4 c = col * Texel(tex, tc+offset[i]);
+				sum += c * kernel[i];
+			}
+			return sum * Texel(bg, sc/screen);
+		}
+	]]
 }
 
 shaders.matrix.sharpen3x3 = {
