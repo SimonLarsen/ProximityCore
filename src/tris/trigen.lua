@@ -23,7 +23,7 @@ local function createTriangle(parent, xoffset, yoffset, rotoffset, size)
 		rot = parent.rot+rotoffset,
 		size = size,
 		color = getColor(parent),
-		scale = 1,
+		scale = 0,
 		type = "triangle"
 	}
 end
@@ -37,7 +37,7 @@ local function createRectangle(parent, xoffset, yoffset, rotoffset, width, heigh
 		rot = parent.rot+rotoffset,
 		width = width, height = height,
 		color = getColor(parent),
-		scale = 1,
+		scale = 0,
 		type = "rectangle"
 	}
 end

@@ -19,7 +19,7 @@ shaders.shader.convolution3x3 = {
 	]]
 }
 
-shaders.shader.test = {
+shaders.shader.trishader = {
 	pixelcode = [[
 		uniform vec2 screen;
 		uniform Image bg;
@@ -32,7 +32,8 @@ shaders.shader.test = {
 				vec4 c = col * Texel(tex, tc+offset[i]);
 				sum += c * kernel[i];
 			}
-			return sum * Texel(bg, sc/screen);
+			vec2 rsc = vec2(sc.x/screen.x, 1.0 - sc.y/screen.y);
+			return sum * Texel(bg, rsc);
 		}
 	]]
 }
