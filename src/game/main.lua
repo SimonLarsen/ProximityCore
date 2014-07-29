@@ -1,13 +1,11 @@
 class = require("middleclass.middleclass")
 Gamestate = require("hump.gamestate")
-Entities = require("entities")
 
-local Entity = require("entity")
-local e
+local Game = require("scene_Game")
 
 function love.load()
 	Gamestate.registerEvents()
-	Gamestate.switch(require("scene_game"))
+	Gamestate.switch(Game())
 end
 
 function love.update(dt)

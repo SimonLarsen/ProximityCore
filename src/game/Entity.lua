@@ -1,4 +1,4 @@
-local Transform = require("transform")
+local Transform = require("Transform")
 
 local Entity = class("Entity")
 
