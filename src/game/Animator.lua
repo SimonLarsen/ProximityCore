@@ -17,7 +17,8 @@ function Animator:initialize(animator)
 	for i,v in pairs(animator.properties) do
 		self._properties[i] = {
 			value = v.value,
-			isTrigger = v.isTrigger
+			isTrigger = v.isTrigger or false,
+			predicate = v.predicate
 		}
 	end
 	self._properties["_finished"] = { value = false, isTrigger = true }
@@ -34,7 +35,9 @@ function Animator:update(dt)
 
 	for i,v in pairs(self._transitions) do
 		if v.from == self._state then
-			if self._properties[v.property].value == v.value then
+			local prop = self._properties[v.property]
+			if (v.predicate and v.predicate(prop.value, v.value))
+			or (v.predicate == nil and prop.value == v.value) then
 				self._state = v.to
 				self._animations[self._state]:reset()
 				break
@@ -43,7 +46,7 @@ function Animator:update(dt)
 	end
 
 	for i,v in pairs(self._properties) do
-		if v.isTrigger then
+		if v.isTrigger == true then
 			v.value = false
 		end
 	end
