@@ -16,7 +16,7 @@ function Resources.static:getImage(path)
 	return self.images[path]
 end
 
-Resources.static.sounds_path = "data/sounds"
+Resources.static.sounds_path = "data/sounds/"
 Resources.static.sounds = {}
 
 function Resources.static:getSound(path)
@@ -28,6 +28,21 @@ function Resources.static:getSound(path)
 	end
 
 	return self.sounds[path]
+end
+
+Resources.static.animators_path = "data/animators/"
+Resources.static.animators = {}
+
+function Resources.static:getAnimator(path)
+	path = self.animators_path .. path
+
+	if self.animators[path] == nil then
+		local f = loadfile(path)
+		self.animators[path] = f()
+		Log.static:print("Loaded animator: " .. path)
+	end
+
+	return self.animators[path]
 end
 
 return Resources

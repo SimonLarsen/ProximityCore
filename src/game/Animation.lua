@@ -21,22 +21,28 @@ function Animation:initialize(image, fw, fh, delay, ox, oy)
 
 	self._frames = xframes * yframes
 	self._delay = delay
-	self._frame = 1
-	self._time = 0
 	self._speed = 1
 	self._ox = ox or (fw/2)
 	self._oy = oy or (fh/2)
+	self:reset()
 end
 
-function Animation:update(dt)
+function Animation:update(dt, entity)
 	self._time = self._time + dt * self._speed
 	if self._time >= self._delay then
 		self._time = 0
 		self._frame = self._frame + 1
 		if self._frame > self._frames then
 			self._frame = 1
+			self._finished = true
 		end
 	end
+end
+
+function Animation:reset()
+	self._frame = 1
+	self._time = 0
+	self._finished = false
 end
 
 function Animation:draw(x, y, r, sx, sy)
@@ -50,6 +56,10 @@ end
 function Animation:setOrigin(ox, oy)
 	self._ox = ox
 	self._oy = oy
+end
+
+function Animation:isFinished()
+	return self._finished
 end
 
 return Animation
