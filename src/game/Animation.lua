@@ -1,9 +1,8 @@
-local Animation = {}
-Animation.__index = Animation
+local Renderer = require("Renderer")
 
-function Animation.create(image, fw, fh, delay, ox, oy)
-	self = setmetatable({}, Animation)
+local Animation = class("Animation", Renderer)
 
+function Animation:initialize(image, fw, fh, delay, ox, oy)
 	self._image = image
 
 	local imgw = image:getWidth()
@@ -27,8 +26,6 @@ function Animation.create(image, fw, fh, delay, ox, oy)
 	self._speed = 1
 	self._ox = ox or (fw/2)
 	self._oy = oy or (fh/2)
-
-	return self
 end
 
 function Animation:update(dt)
@@ -55,4 +52,4 @@ function Animation:setOrigin(ox, oy)
 	self._oy = oy
 end
 
-return setmetatable(Animation, { __call = function(self, ...) return Animation.create(...) end })
+return Animation

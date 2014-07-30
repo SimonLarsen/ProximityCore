@@ -6,7 +6,7 @@ function Scene:initialize()
 	self._entities = {}
 end
 
-function Scene:update(dt)
+function Scene:baseUpdate(dt)
 	for i,e in ipairs(self:getEntities()) do
 		for j,c in pairs(e:getComponents()) do
 			if c.update then
@@ -16,12 +16,12 @@ function Scene:update(dt)
 	end
 end
 
-function Scene:draw()
+function Scene:baseDraw()
 	for i,e in ipairs(self:getEntities()) do
 		local r = e:getComponent("renderer")
 		if r then
 			local t = e.transform
-			r:draw(t.x, t.y, t.r, t.sx, t.sy)
+			r:draw(t.position.x, t.position.y, t.rotation, t.scale.x, t.scale.y)
 		end
 	end
 end

@@ -1,4 +1,5 @@
 class = require("middleclass.middleclass")
+require("mymath")
 
 local Gamestate = require("hump.gamestate")
 local Resources = require("Resources")
@@ -10,9 +11,9 @@ function love.load()
 end
 
 function love.update(dt)
-	Gamestate.current():update(dt)
+	Gamestate.current():baseUpdate(dt)
 end
 
 function love.draw()
-	Gamestate.current():draw()
+	Gamestate.current():baseDraw()
 end
