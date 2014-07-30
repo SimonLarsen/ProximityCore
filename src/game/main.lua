@@ -1,6 +1,7 @@
 class = require("middleclass.middleclass")
-Gamestate = require("hump.gamestate")
 
+local Gamestate = require("hump.gamestate")
+local Resources = require("Resources")
 local Game = require("scene_Game")
 
 function love.load()
