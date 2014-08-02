@@ -2,7 +2,7 @@ return {
 	default = "idle",
 
 	properties = {
-		["blush"] = { value = false, isTrigger = true }
+		["_finished"] = { value = false, isTrigger = true }
 	},
 
 	states = {
@@ -27,7 +27,7 @@ return {
 		},
 		{
 			from = "blush", to = "idle",
-			property = "finished", value = true
+			property = "_finished", value = true
 		}
 	}
 }

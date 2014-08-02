@@ -15,6 +15,7 @@ function Animator:initialize(animator)
 
 	self._properties = {}
 	for i,v in pairs(animator.properties) do
+		assert(i ~= "_finished", "\"_finished\" is a reserved property name.")
 		self._properties[i] = {
 			value = v.value,
 			isTrigger = v.isTrigger or false,
