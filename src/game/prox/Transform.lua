@@ -1,4 +1,4 @@
-local Vector2 = require("Vector2")
+local Vector2 = require("prox.Vector2")
 
 local Transform = class("Transform")
 

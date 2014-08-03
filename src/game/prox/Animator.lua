@@ -1,6 +1,6 @@
-local Renderer = require("Renderer")
-local Animation = require("Animation")
-local Resources = require("Resources")
+local Renderer = require("prox.Renderer")
+local Animation = require("prox.Animation")
+local Resources = require("prox.Resources")
 
 local Animator = class("Animator", Renderer)
 

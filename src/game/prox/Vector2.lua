@@ -1,4 +1,5 @@
-local Vector2 = class("Vector2")
+local Vector2 = class("prox.Vector2")
+local Mathf = require("prox.Mathf")
 
 function Vector2:initialize(x, y)
 	self.x = x or 0
@@ -16,15 +17,15 @@ end
 
 function Vector2.static:lerp(a, b, t)
 	return Vector2(
-		math.lerp(a.x, b.x, t),
-		math.lerp(a.y, b.y, t)
+		Mathf.lerp(a.x, b.x, t),
+		Mathf.lerp(a.y, b.y, t)
 	)
 end
 
 function Vector2.static:smoothstep(a, b, t)
 	return Vector2(
-		math.smoothstep(a.x, b.x, t),
-		math.smoothstep(a.y, b.y, t)
+		Mathf.smoothstep(a.x, b.x, t),
+		Mathf.smoothstep(a.y, b.y, t)
 	)
 end
 

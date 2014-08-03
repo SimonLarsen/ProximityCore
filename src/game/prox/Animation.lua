@@ -1,4 +1,4 @@
-local Renderer = require("Renderer")
+local Renderer = require("prox.Renderer")
 
 local Animation = class("Animation", Renderer)
 

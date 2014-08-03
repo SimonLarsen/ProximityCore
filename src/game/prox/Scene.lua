@@ -1,4 +1,4 @@
-local Entity = require("Entity")
+local Entity = require("prox.Entity")
 
 local Scene = class("Scene")
 

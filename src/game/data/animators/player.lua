@@ -2,7 +2,7 @@ return {
 	default = "idle",
 
 	properties = {
-		["_finished"] = { value = false, isTrigger = true }
+		["blush"] = { value = false, isTrigger = true }
 	},
 
 	states = {

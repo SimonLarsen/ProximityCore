@@ -1,4 +1,4 @@
-local Log = require("Log")
+local Log = require("prox.Log")
 
 local Resources = class("Resources")
 

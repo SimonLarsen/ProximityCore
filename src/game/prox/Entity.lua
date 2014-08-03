@@ -1,4 +1,4 @@
-local Transform = require("Transform")
+local Transform = require("prox.Transform")
 
 local Entity = class("Entity")
 
