@@ -9,27 +9,29 @@ local WIDTH = 900
 local HEIGHT = 670
 
 local LAYOUT_NAMES = { "Visuals", "Movement", "Bullets" }
-local BULLET_TYPES = { "Balls", "Ray", "Bomb", "Radial" }
+local BULLET_TYPES = { "Fan", "FanAtPlayer", "Ray", "Bomb", "Radial" }
 
 -- Data
 local layouts = {
-	Visuals = { panel = nil },
+	Visuals  = { panel = nil },
 	Movement = { panel = nil },
-	Bullets = { panel = nil, type = nil, parent = nil }
+	Bullets  = { panel = nil, type = nil, parent = nil }
 }
 
 local bullet_forms = {
-	Balls  = { panel = nil, count = nil, offset = nil },
-	Ray    = { panel = nil, dir = nil },
-	Bomb   = { panel = nil, radius = nil },
-	Radial = { panel = nil, startdir = nil, enddir = nil }
+	["Fan"]         = { panel = nil, count = nil, angle1 = nil, angle2 = nil },
+	["FanAtPlayer"] = { panel = nil, count = nil, angle = nil },
+	["Ray"]         = { panel = nil, dir = nil },
+	["Bomb"]        = { panel = nil, radius = nil },
+	["Radial"]      = { panel = nil, startdir = nil, enddir = nil }
 }
 
 local BULLET_FIELDS = {
-	Balls 	= { "count", "offset" },
-	Ray		= { "dir" },
-	Bomb	= { "radius" },
-	Radial	= { "startdir", "enddir" }
+	["Fan"]         = { "count", "dir", "angle" },
+	["FanAtPlayer"] = { "count", "angle" },
+	["Ray"]         = { "dir",  },
+	["Bomb"]        = { "radius" },
+	["Radial"]      = { "startdir", "enddir" }
 }
 
 local statustext
